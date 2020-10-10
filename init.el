@@ -1,5 +1,6 @@
-;; Tommy's .emacs file
+;; Anton's init.el file
 ;; Created: August of 2014
+(message "begin loading init.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -16,11 +17,11 @@
  '(c-basic-offset 4)
  '(c-default-style
    (quote
-    ((c-mode . "linux")
-     (c++-mode . "linux")
-     (java-mode . "java")
-     (awk-mode . "awk")
-     (other . "gnu"))))
+	((c-mode . "linux")
+	 (c++-mode . "linux")
+	 (java-mode . "java")
+	 (awk-mode . "awk")
+	 (other . "gnu"))))
  '(custom-enabled-themes (quote (deeper-blue)))
  '(display-battery-mode t)
  '(electric-indent-mode nil)
@@ -30,15 +31,15 @@
  '(load-home-init-file t t)
  '(lua-indent-level 4 t)
  '(make-backup-files nil)
- '(menu-bar-mode nil)
+ '(menu-bar-mode t)
  '(package-archives
    (quote
-    (("marmalade" . "http://marmalade-repo.org/packages/")
-     ("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "http://melpa.org/packages/"))))
+	(("marmalade" . "http://marmalade-repo.org/packages/")
+	 ("gnu" . "http://elpa.gnu.org/packages/")
+	 ("melpa" . "http://melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (rjsx-mode haxe-mode simpleclip evil-magit magit nodejs-repl scala-mode web-mode yaml-mode markdown-mode ag zone-nyan xelb newlisp-mode nav lua-mode go-mode evil charmap)))
+	(typescript-mode vue-mode bpftrace-mode rjsx-mode haxe-mode simpleclip evil-magit magit nodejs-repl scala-mode web-mode yaml-mode markdown-mode ag zone-nyan xelb newlisp-mode nav lua-mode go-mode evil charmap)))
  '(python-shell-interpreter "python3")
  '(scheme-program-name "guile")
  '(scroll-bar-mode nil)
@@ -46,15 +47,28 @@
  '(speedbar-show-unknown-files t)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
- '(web-mode-markup-indent-offset 2))
+ '(web-mode-markup-indent-offset 2)
+ '(whitespace-style
+   (quote
+	(face trailing tabs spaces indentation::space space-after-tab space-before-tab space-mark tab-mark))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#243035" :foreground "#bcc3c7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
- '(variable-pitch ((t (:family "Times New Roman")))))
+ '(default ((t (:inherit nil :stipple nil :background "#243035" :foreground "#bcc3c7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "PfEd" :family "Monaco"))))
+ '(highlight ((t (:background "midnight blue"))))
+ '(region ((t (:background "SpringGreen4"))))
+ '(variable-pitch ((t (:family "Times New Roman"))))
+ '(whitespace-indentation ((t (:foreground "gray26"))))
+ '(whitespace-space ((t (:foreground "gray26"))))
+ '(whitespace-tab ((t (:foreground "gray26")))))
+
+
+;; Something you has to do on Mac for homebrew apps
+
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 
 ;; Enable crap
 
@@ -66,11 +80,11 @@
 
 ;; Make slime work
 
-(require 'cl)
-(require 'slime)
-(setq-default inferior-lisp-program "sbcl")
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime/")
-(slime-setup)
+;;(require 'cl)
+;;(require 'slime)
+;;(setq-default inferior-lisp-program "sbcl")
+;;(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime/")
+;;(slime-setup)
 
 ;; This will make installed packages actually work
 
@@ -84,6 +98,12 @@
 
 (require 'evil)
 (evil-mode 1)
+
+;; Hilite current line
+(global-hl-line-mode +1)
+
+;; Whitespace
+(global-whitespace-mode +1)
 
 ;; Simple clip
 
@@ -104,6 +124,9 @@ This is a vararg extension to `global-set-key'."
 ;; Speedy speedbar
 (global-set-key (kbd "<kp-enter>") 'speedbar)
 
+;; macOS kill line backwards
+(global-set-key (kbd "<s-backspace>") (lambda () (interactive) (kill-line 0)))
+
 ;; Read extensions from ~/.emacs.d/lisp
 
 ;; (mapc (lambda (x) (push x load-path))
@@ -117,7 +140,7 @@ This is a vararg extension to `global-set-key'."
 ;; I want to know my column number.
 (column-number-mode)
 
-;; Empty lines
+;; Empty lines. Doesn't appear to work in macOS
 
 (setq-default indicate-empty-lines t)
 
@@ -125,6 +148,16 @@ This is a vararg extension to `global-set-key'."
 ;; Usage: C-q 0 a b 9 <enter> will type character U+0AB9
 
 (setq-default read-quoted-char-radix 16)
+
+;; System-specific settings
+
+(when (eq system-type 'darwin)
+  ;; Set macOS ⌘-C to copy stuff in visual state
+  (define-key evil-visual-state-map (kbd "A-c") 'simpleclip-copy)
+
+  ;; This tells dired to use 'gls' instead of 'ls' on macOS
+  ;; Do 'brew install coreutils' if it doesn't work
+  (setq insert-directory-program (executable-find "/usr/local/bin/gls")))
 
 ;; This makes Dired blah-blah-blah.
 
@@ -134,53 +167,17 @@ This is a vararg extension to `global-set-key'."
 
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
 
-;; No tabs - no fabs (implying fabs are bad)
+;; Yes tabs - yes fabs (implying fabs are good)
 
-(setq-default indent-tabs-mode nil)
-
-
-;; Emacs Pinkie
-
-;(require 'pony-scratch)
-
-;(let ((phrases ["Java sucks!"
-;                "Everything sucks!"
-;                "Type C-x C-c now! Save me from dealing with you."
-;                "Your typing speed amuse me."
-;                "Pink!"
-;                "Let'th procethth thome lithtth!"
-;                "values of β will give rise to dom!"
-;                "Ponk!"
-;                "I'm pretty, ain't I?"
- ;               "I hate you because you use vim a lot."
- ;               "So-o-o-no?.."
- ;               "My other cake is cdke."
- ;               "SEXP."
- ;               "pinkie@pie ~$ screw you"
- ;               "Who's the worst pony? YOU ARE!"
- ;               "There's nothing wrong with vim, something's wrong with YOU."
- ;               "I'm the operator with my pocket evaluator!"
- ;               "Don't forget that I don't care."
- ;               "Sexp joke!"
- ;               "You know what looks like a big defun? YOUR FACE!"
- ;               "I'm just a picture. No need to be offended."
- ;               "RNG ERROR"
- ;               "Ceep kalm and sfuhfle lterets."
- ;               "Welcome to Emacs!.. I decided to be silly today."
- ;               "Sexp in need is a sexp, indeed!"
- ;               "= = ==  = ==  ===  = = JUST WHAT I NEED!"
- ;               "If you think something is obvious, it's most likely because you're undereducated."
- ;               "Prepare your eye sockets for visual delights and good time shenaningas."
- ;               "Sexp considered harmful."
- ;               "Feuerboch!"]))
- ; (pony-scratch (aref phrases (random (length phrases)))))
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode t)
 
 ;;; KEY BINDINGS
 
 ;; Smart C-a
 
 (defun beginning-of-line-dwim ()
-  "Go to first nonblank character or beginning of line."
+  "Go to first nonblank character or beginning of a line."
   (interactive)
   (if (bolp)
       (back-to-indentation)
@@ -226,10 +223,13 @@ This is a vararg extension to `global-set-key'."
 ;;     (local-set-key (kbd "C-c C-r") 'nodejs-repl-send-region)
 ;;     (local-set-key (kbd "C-c C-b") 'nodejs-repl-send-buffer)))
 
-;; I want async/await to be highlighted
+;; I want ES6 keywords to be highlighted
 (font-lock-add-keywords
  'js-mode
- '(("\\<\\(async\\|await\\|of\\|\\)\\>" . 'font-lock-keyword-face)))
+ '(("\\<\\(async\\|await\\|of\\|as\\|from\\|\\)\\>" . 'font-lock-keyword-face)))
+
+(add-to-list 'auto-mode-alist '("\\.svelte\\'" . vue-mode))
+
 
 ;; Evil mode SPC prefixed keys
 
@@ -244,8 +244,24 @@ This is a vararg extension to `global-set-key'."
 (define-key evil-normal-state-map (kbd "SPC o m")
   (lambda () (interactive)
     (find-file "~/org/main.org")))
+
 (define-key evil-normal-state-map (kbd "SPC c") 'quick-calc)
+
 (define-key evil-normal-state-map (kbd "SPC g") 'magit-status)
+
+(define-key evil-normal-state-map (kbd "SPC i")
+  (lambda () (interactive)
+    (setq-default indent-tabs-mode t)
+    (setq-default tab-width 4)))
+
+(define-key evil-normal-state-map (kbd "SPC I")
+  (lambda () (interactive)
+    (setq-default indent-tabs-mode nil)
+    (setq-default tab-width 8)))
+
+(define-key evil-normal-state-map (kbd "SPC w")
+  (lambda () (interactive)
+    (setq truncate-lines (not truncate-lines))))
 
 ;; Easier indenting in normal and visual states
 
@@ -257,6 +273,16 @@ This is a vararg extension to `global-set-key'."
 (define-key evil-visual-state-map (kbd "TAB")
   (lambda () (interactive)
     (indent-region (point) (mark))))
+
+;; Single key commenting out
+
+(define-key evil-visual-state-map (kbd ";")
+  (lambda () (interactive)
+    (comment-region (point) (mark))))
+
+(define-key evil-normal-state-map (kbd ";")
+  (lambda () (interactive)
+    (comment-line (line-number-at-pos))))
 
 ;; Easy evil narrowing
 
@@ -308,12 +334,20 @@ This is a vararg extension to `global-set-key'."
 
 ;; Transparency
 
-(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+(set-frame-parameter (selected-frame) 'alpha '(100 . 100))
+(add-to-list 'default-frame-alist '(alpha . (100 . 100)))
 
 ;; Evil magit
 
 (evil-magit-init)
 
-;; .emacs ends here
 (put 'dired-find-alternate-file 'disabled nil)
+
+(defun __xxx__ ()
+  (let ((mode (substring "t8" 0 1))
+        (count (substring "t8" 1)))
+    (setq-default tab-always-indent (equal mode "t"))
+    (setq tab-width (string-to-number count))))
+
+(message "end loading init.el")
+;; init.el ends here
