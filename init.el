@@ -1,4 +1,4 @@
-;; Anton's init.el file
+;; Maria's init.el file
 ;; Created: August of 2014
 (message "begin loading init.el")
 
@@ -12,34 +12,33 @@
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
  '(auto-save-default nil)
- '(browse-url-browser-function (quote browse-url-generic))
- '(browse-url-generic-program "chromium")
+ '(browse-url-browser-function 'browse-url-default-macosx-browser)
+ '(browse-url-generic-program "open -a Safari")
  '(c-basic-offset 4)
  '(c-default-style
-   (quote
-	((c-mode . "linux")
+   '((c-mode . "linux")
 	 (c++-mode . "linux")
 	 (java-mode . "java")
 	 (awk-mode . "awk")
-	 (other . "gnu"))))
- '(custom-enabled-themes (quote (deeper-blue)))
+	 (other . "gnu")))
  '(display-battery-mode t)
+ '(display-raw-bytes-as-hex t)
  '(electric-indent-mode nil)
  '(eww-download-directory "~/dl/")
  '(inhibit-startup-screen t)
+ '(initial-buffer-choice
+   "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")
  '(initial-scratch-message nil)
  '(load-home-init-file t t)
  '(lua-indent-level 4 t)
  '(make-backup-files nil)
  '(menu-bar-mode t)
+ '(org-agenda-files nil)
  '(package-archives
-   (quote
-	(("marmalade" . "http://marmalade-repo.org/packages/")
-	 ("gnu" . "http://elpa.gnu.org/packages/")
-	 ("melpa" . "http://melpa.org/packages/"))))
+   '(("gnu" . "http://elpa.gnu.org/packages/")
+	 ("melpa" . "http://melpa.org/packages/")))
  '(package-selected-packages
-   (quote
-	(typescript-mode vue-mode bpftrace-mode rjsx-mode haxe-mode simpleclip evil-magit magit nodejs-repl scala-mode web-mode yaml-mode markdown-mode ag zone-nyan xelb newlisp-mode nav lua-mode go-mode evil charmap)))
+   '(slime swift-mode xcode-project typescript-mode vue-mode bpftrace-mode rjsx-mode haxe-mode simpleclip evil-magit magit nodejs-repl scala-mode web-mode yaml-mode markdown-mode ag zone-nyan xelb newlisp-mode nav lua-mode go-mode evil charmap))
  '(python-shell-interpreter "python3")
  '(scheme-program-name "guile")
  '(scroll-bar-mode nil)
@@ -49,21 +48,20 @@
  '(tooltip-mode nil)
  '(web-mode-markup-indent-offset 2)
  '(whitespace-style
-   (quote
-	(face trailing tabs spaces indentation::space space-after-tab space-before-tab space-mark tab-mark))))
+   '(face trailing tabs spaces indentation::space space-after-tab space-before-tab space-mark tab-mark)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#243035" :foreground "#bcc3c7" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "PfEd" :family "Monaco"))))
- '(highlight ((t (:background "midnight blue"))))
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "PfEd" :family "Monaco"))))
+ '(highlight ((t (:background "light blue"))))
  '(region ((t (:background "SpringGreen4"))))
- '(variable-pitch ((t (:family "Times New Roman"))))
- '(whitespace-indentation ((t (:foreground "gray26"))))
- '(whitespace-space ((t (:foreground "gray26"))))
- '(whitespace-tab ((t (:foreground "gray26")))))
+ '(variable-pitch ((t (:family "Helvetica"))))
+ '(whitespace-indentation ((t (:foreground "gray76"))))
+ '(whitespace-space ((t (:foreground "gray76"))))
+ '(whitespace-tab ((t (:foreground "gray76")))))
 
 
 ;; Something you has to do on Mac for homebrew apps
@@ -81,10 +79,10 @@
 ;; Make slime work
 
 ;;(require 'cl)
-;;(require 'slime)
-;;(setq-default inferior-lisp-program "sbcl")
+(require 'slime)
+(setq-default inferior-lisp-program "/usr/local/bin/sbcl")
 ;;(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime/")
-;;(slime-setup)
+(slime-setup)
 
 ;; This will make installed packages actually work
 
@@ -243,7 +241,7 @@ This is a vararg extension to `global-set-key'."
 ;;     (kill-buffer (current-buffer))))
 (define-key evil-normal-state-map (kbd "SPC o m")
   (lambda () (interactive)
-    (find-file "~/org/main.org")))
+    (find-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")))
 
 (define-key evil-normal-state-map (kbd "SPC c") 'quick-calc)
 
@@ -284,7 +282,9 @@ This is a vararg extension to `global-set-key'."
   (lambda () (interactive)
     (comment-line (line-number-at-pos))))
 
-;; Easy evil narrowing
+;; Evil mode keybindings
+
+;;; Easy narrowing
 
 (define-key evil-visual-state-map (kbd "n")
   (lambda () (interactive)
@@ -296,7 +296,7 @@ This is a vararg extension to `global-set-key'."
     (widen)
     (evil-exit-visual-state)))
 
-;; Evil mode keybindings
+;;; Kill window
 
 (define-key
   evil-motion-state-map
@@ -304,6 +304,16 @@ This is a vararg extension to `global-set-key'."
   (lambda () (interactive)
     (kill-buffer (current-buffer))
     (evil-window-delete)))
+
+;; Insert date
+
+(define-key evil-insert-state-map (kbd "C-§")
+  (lambda (arg) (interactive "P")
+    (insert (format-time-string "%Y-%m-%d"))))
+
+(define-key evil-insert-state-map (kbd "C-±")
+  (lambda (arg) (interactive "P")
+    (insert (format-time-string "=%H:%M="))))
 
 ;; Snippet mini-extension
 (defmacro define-snippet (key &rest body)
