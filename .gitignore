@@ -5,3 +5,4 @@ thumbs/
 .org-id-locations
 network-security.data
 .DS_Store
+.*~
