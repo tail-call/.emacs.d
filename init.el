@@ -1,5 +1,6 @@
 ;; Maria's init.el file
 ;; Created: August of 2014
+(setq lexical-binding t)
 (message "begin loading init.el")
 
 (custom-set-variables
@@ -231,35 +232,38 @@ This is a vararg extension to `global-set-key'."
 
 ;; Evil mode SPC prefixed keys
 
-(define-key evil-normal-state-map (kbd "SPC a") 'ag)
-(define-key evil-normal-state-map (kbd "SPC w") 'widen)
+(defun define-spc-command (key function)
+  (define-key evil-normal-state-map (kbd (format "SPC %s" key)) function))
+
+(define-spc-command "a" 'ag)
+(define-spc-command "w" 'widen)
+(define-spc-command "c" 'quick-calc)
+(define-spc-command "g" 'magit-status)
+
+(define-spc-command "o m"
+  (lambda () (interactive)
+    (find-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")))
+
+(define-spc-command "i"
+  (lambda () (interactive)
+    (setq-default indent-tabs-mode t)
+    (setq-default tab-width 4)))
+
+(define-spc-command "I"
+  (lambda () (interactive)
+    (setq-default indent-tabs-mode nil)
+    (setq-default tab-width 8)))
+
+(define-spc-command "w"
+  (lambda () (interactive)
+    (setq truncate-lines (not truncate-lines))))
+
 ;; (define-key evil-normal-state-map (kbd "SPC b c") 'erase-buffer)
 ;; (define-key evil-normal-state-map (kbd "SPC b n") 'switch-to-next-buffer)
 ;; (define-key evil-normal-state-map (kbd "SPC b p") 'switch-to-prev-buffer)
 ;; (define-key evil-normal-state-map (kbd "SPC b k")
 ;;   (lambda () (interactive)
 ;;     (kill-buffer (current-buffer))))
-(define-key evil-normal-state-map (kbd "SPC o m")
-  (lambda () (interactive)
-    (find-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")))
-
-(define-key evil-normal-state-map (kbd "SPC c") 'quick-calc)
-
-(define-key evil-normal-state-map (kbd "SPC g") 'magit-status)
-
-(define-key evil-normal-state-map (kbd "SPC i")
-  (lambda () (interactive)
-    (setq-default indent-tabs-mode t)
-    (setq-default tab-width 4)))
-
-(define-key evil-normal-state-map (kbd "SPC I")
-  (lambda () (interactive)
-    (setq-default indent-tabs-mode nil)
-    (setq-default tab-width 8)))
-
-(define-key evil-normal-state-map (kbd "SPC w")
-  (lambda () (interactive)
-    (setq truncate-lines (not truncate-lines))))
 
 ;; Easier indenting in normal and visual states
 
