@@ -1,4 +1,4 @@
-;; Maria's init.el file
+;; Maria's init.el file  -*- lexical-binding: t; -*-
 ;; Created: August of 2014
 
 (message "begin loading init.el")
@@ -243,14 +243,15 @@ This is a vararg extension to `global-set-key'."
     (define-spc-command
      "i"
      (lambda () (interactive)
-       (setq-default indent-tabs-mode t)
-       (setq-default tab-width 4)))
-
-    (define-spc-command
-     "I"
-     (lambda () (interactive)
-       (setq-default indent-tabs-mode nil)
-       (setq-default tab-width 8)))
+       (let ((indent-method (intern (read-from-minibuffer "Indent method (t or s): ")))
+             (tab-width (string-to-number (read-from-minibuffer "Tab width: "))))
+         (cond
+          ((eq indent-method 't)
+           (setq-default indent-tabs-mode t))
+          ((eq indent-method 's)
+           (setq-default indent-tabs-mode nil)
+           (setq-default tab-width tab-width))
+          (t (message "Invalid indent amethod. Use 't' or 's'."))))))
 
     (define-spc-command
      "w"
