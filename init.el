@@ -1,7 +1,8 @@
 ;; Maria's init.el file
 ;; Created: August of 2014
-(setq lexical-binding t)
+
 (message "begin loading init.el")
+(setq lexical-binding t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -65,17 +66,23 @@
  '(whitespace-tab ((t (:foreground "gray76")))))
 
 
-;; Something you has to do on Mac for homebrew apps
 
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
+(cl-labels
+    ;; My config DSL
+    ((append-to-env (env-name component)
+       (setenv env-name (concat (getenv env-name) component)))
+     (enable-functions (&rest symbols)
+       (dolist (symbol symbols)
+         (put symbol 'disabled nil))))
 
-;; Enable crap
+  ;; Something you have to do on Mac for homebrew apps
+  (append-to-env "PATH" ":/usr/local/bin")
 
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'erase-buffer 'disabled nil)
+  (enable-functions 'upcase-region
+                    'downcase-region
+                    'narrow-to-region
+                    'narrow-to-page
+                    'erase-buffer))
 
 ;; Make slime work
 
