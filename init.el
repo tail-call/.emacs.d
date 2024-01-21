@@ -4,6 +4,14 @@
 (message "begin loading init.el")
 (setq lexical-binding t)
 
+'( menu
+
+   (find-file                           ; INDEX.org
+    "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org"
+    )                                   ; C-x C-e
+
+  )
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -28,8 +36,7 @@
  '(electric-indent-mode nil)
  '(eww-download-directory "~/Downloads/")
  '(inhibit-startup-screen t)
- '(initial-buffer-choice
-   "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")
+ '(initial-buffer-choice "~/.emacs.d/init.el")
  '(initial-scratch-message nil)
  '(load-home-init-file t t)
  '(lua-indent-level 4 t)
