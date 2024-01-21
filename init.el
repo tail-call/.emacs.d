@@ -18,14 +18,14 @@
  '(c-basic-offset 4)
  '(c-default-style
    '((c-mode . "linux")
-	 (c++-mode . "linux")
-	 (java-mode . "java")
-	 (awk-mode . "awk")
-	 (other . "gnu")))
+     (c++-mode . "linux")
+     (java-mode . "java")
+     (awk-mode . "awk")
+     (other . "gnu")))
  '(display-battery-mode t)
  '(display-raw-bytes-as-hex t)
  '(electric-indent-mode nil)
- '(eww-download-directory "~/dl/")
+ '(eww-download-directory "~/Downloads/")
  '(inhibit-startup-screen t)
  '(initial-buffer-choice
    "~/Library/Mobile Documents/com~apple~CloudDocs/org/INDEX.org")
@@ -37,7 +37,7 @@
  '(org-agenda-files nil)
  '(package-archives
    '(("gnu" . "http://elpa.gnu.org/packages/")
-	 ("melpa" . "http://melpa.org/packages/")))
+     ("melpa" . "http://melpa.org/packages/")))
  '(package-selected-packages
    '(slime swift-mode xcode-project typescript-mode vue-mode bpftrace-mode rjsx-mode haxe-mode simpleclip evil-magit magit nodejs-repl scala-mode web-mode yaml-mode markdown-mode ag zone-nyan xelb newlisp-mode nav lua-mode go-mode evil charmap))
  '(python-shell-interpreter "python3")
