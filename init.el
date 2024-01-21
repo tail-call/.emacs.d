@@ -86,6 +86,9 @@ This is a vararg extension to `global-set-key'."
        (dolist (symbol symbols)
          (put symbol 'disabled nil)))
 
+     (define-spc-command (key function)
+       (define-key evil-normal-state-map
+                   (kbd (format "SPC %s" key)) function))
      )
 
   ;; Something you have to do on Mac for homebrew apps
@@ -219,12 +222,7 @@ This is a vararg extension to `global-set-key'."
 
   (add-to-list 'auto-mode-alist '("\\.svelte\\'" . vue-mode))
 
-
-  ;; Evil mode SPC prefixed keys
-
-  (cl-labels ((define-spc-command (key function)
-                (define-key evil-normal-state-map
-                            (kbd (format "SPC %s" key)) function)))
+  (progn                                ; Evil mode bindings
     (define-spc-command "a" 'ag)
     (define-spc-command "w" 'widen)
     (define-spc-command "c" 'quick-calc)
@@ -250,68 +248,66 @@ This is a vararg extension to `global-set-key'."
     (define-spc-command
      "w"
      (lambda () (interactive)
-       (setq truncate-lines (not truncate-lines)))))
+       (setq truncate-lines (not truncate-lines))))
 
-  ;; (define-key evil-normal-state-map (kbd "SPC b c") 'erase-buffer)
-  ;; (define-key evil-normal-state-map (kbd "SPC b n") 'switch-to-next-buffer)
-  ;; (define-key evil-normal-state-map (kbd "SPC b p") 'switch-to-prev-buffer)
-  ;; (define-key evil-normal-state-map (kbd "SPC b k")
-  ;;   (lambda () (interactive)
-  ;;     (kill-buffer (current-buffer))))
+    ;; (define-key evil-normal-state-map (kbd "SPC b c") 'erase-buffer)
+    ;; (define-key evil-normal-state-map (kbd "SPC b n") 'switch-to-next-buffer)
+    ;; (define-key evil-normal-state-map (kbd "SPC b p") 'switch-to-prev-buffer)
+    ;; (define-key evil-normal-state-map (kbd "SPC b k")
+    ;;   (lambda () (interactive)
+    ;;     (kill-buffer (current-buffer))))
 
-  ;; Easier indenting in normal and visual states
+    ;; Easier indenting in normal and visual states
 
-  (define-key evil-normal-state-map (kbd "RET")
-              (lambda () (interactive)
-                (indent-for-tab-command)
-                (evil-next-line)))
+    (define-key evil-normal-state-map (kbd "RET")
+                (lambda () (interactive)
+                  (indent-for-tab-command)
+                  (evil-next-line)))
 
-  (define-key evil-visual-state-map (kbd "TAB")
-              (lambda () (interactive)
-                (indent-region (point) (mark))))
+    (define-key evil-visual-state-map (kbd "TAB")
+                (lambda () (interactive)
+                  (indent-region (point) (mark))))
 
-  ;; Single key commenting out
+    ;; Single key commenting out
 
-  (define-key evil-visual-state-map (kbd ";")
-              (lambda () (interactive)
-                (comment-region (point) (mark))))
+    (define-key evil-visual-state-map (kbd ";")
+                (lambda () (interactive)
+                  (comment-region (point) (mark))))
 
-  (define-key evil-normal-state-map (kbd ";")
-              (lambda () (interactive)
-                (comment-line (line-number-at-pos))))
+    (define-key evil-normal-state-map (kbd ";")
+                (lambda () (interactive)
+                  (comment-line (line-number-at-pos))))
 
-  ;; Evil mode keybindings
+    ;; Easy narrowing
 
-;;; Easy narrowing
+    (define-key evil-visual-state-map (kbd "n")
+                (lambda () (interactive)
+                  (narrow-to-region (point) (mark))
+                  (evil-exit-visual-state)))
 
-  (define-key evil-visual-state-map (kbd "n")
-              (lambda () (interactive)
-                (narrow-to-region (point) (mark))
-                (evil-exit-visual-state)))
+    (define-key evil-visual-state-map (kbd "w")
+                (lambda () (interactive)
+                  (widen)
+                  (evil-exit-visual-state)))
 
-  (define-key evil-visual-state-map (kbd "w")
-              (lambda () (interactive)
-                (widen)
-                (evil-exit-visual-state)))
+    ;; Kill window
 
-;;; Kill window
+    (define-key
+     evil-motion-state-map
+     (kbd "C-w C-k")
+     (lambda () (interactive)
+       (kill-buffer (current-buffer))
+       (evil-window-delete)))
 
-  (define-key
-   evil-motion-state-map
-   (kbd "C-w C-k")
-   (lambda () (interactive)
-     (kill-buffer (current-buffer))
-     (evil-window-delete)))
+    ;; Insert date
 
-  ;; Insert date
+    (define-key evil-insert-state-map (kbd "C-§")
+                (lambda (arg) (interactive "P")
+                  (insert (format-time-string "%Y-%m-%d"))))
 
-  (define-key evil-insert-state-map (kbd "C-§")
-              (lambda (arg) (interactive "P")
-                (insert (format-time-string "%Y-%m-%d"))))
-
-  (define-key evil-insert-state-map (kbd "C-±")
-              (lambda (arg) (interactive "P")
-                (insert (format-time-string "=%H:%M="))))
+    (define-key evil-insert-state-map (kbd "C-±")
+                (lambda (arg) (interactive "P")
+                  (insert (format-time-string "=%H:%M=")))))
 
   ;; Snippet mini-extension
   (defmacro define-snippet (key &rest body)
@@ -348,7 +344,6 @@ This is a vararg extension to `global-set-key'."
   ;; Evil magit
 
   (evil-magit-init)
-
   (put 'dired-find-alternate-file 'disabled nil)
 
   (defun __xxx__ ()
